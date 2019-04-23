@@ -1,0 +1,98 @@
+---
+- name: Upgrade PIP
+  command: pip install --upgrade pip
+
+- name: install dependencies required for running AWS batch
+  pip: name={{ item }} state=present
+  with_items:
+    - boto
+    - boto3
+    - awscli
+
+
+- name: gather facts of ec2 security group to be used
+  ec2_group_facts:
+    filters:
+      group-name: default-sg
+
+- name: setup batch envirnoment
+  aws_batch_compute_environment:
+    compute_environment_name: "{{ task_name }}_environment"
+    state: present
+    region: "{{ AWS_REGION }}"
+    compute_environment_state: ENABLED
+    type: MANAGED
+    compute_resource_type: EC2
+    minv_cpus: "{{ minv_cpus }}"
+    maxv_cpus: "{{ maxv_cpus }}"
+    desiredv_cpus: "{{ desiredv_cpus }}"
+    instance_types:
+      - optimal
+    subnets:
+      - "{{subnets}}"
+    security_group_ids:
+      - "{{ security_group_ids }}"
+    instance_role: "{{instance_role}}"
+    tags:
+      env: poc
+      name: batch-python-mongo-poc
+    service_role: "{{service_role}}"
+
+- name: Wait for 2 minutes for compute environment to be created
+  pause:
+    minutes: 2
+
+- name: Setup Batch Job Definition
+  aws_batch_job_definition:
+    job_definition_name: "{{ task_name }}_job_defination"
+    state: present
+    type: container
+    image: "{{ docker_image }}" # docker image with tag
+    vcpus: 1
+    memory: 512
+    job_role_arn: "{{job_role}}"
+    attempts: 3
+  register: job_definition_create_result
+
+- name: Wait for 2 minutes for Job Definiation Creation
+  pause:
+    minutes: 2
+
+- name: For debugging purpose
+  debug: var=job_definition_create_result
+
+
+- name: Setup Batch Job Queue
+  aws_batch_job_queue:
+    job_queue_name: "{{ task_name }}_job_queue"
+    state: present
+    region: "{{ AWS_REGION }}"
+    job_queue_state: ENABLED
+    priority: 1
+    compute_environment_order:
+      - order: 1
+        compute_environment: "{{ task_name }}_environment"
+  register: batch_job_queue_action
+
+- name: debugging the results
+  debug: var=batch_job_queue_action
+
+
+- name: Wait for 2 minutes for Job Queue
+  pause:
+    minutes: 2
+
+
+# Using AWS CLI for this task as Ansible Module Support is not there.
+- name: Submit Batch Job
+  command: >
+    aws batch submit-job
+    --job-name {{ task_name }}_job
+    --job-queue {{ task_name }}_job_queue
+    --job-definition {{job_definition_create_result.response.job_definition_arn}}
+    --container-overrides '{{ lookup('template', 'files/parameters.json.j2') | to_json }}'
+  register: batch_job_submitted
+
+
+- name: debugging the resulsts
+  debug: var=batch_job_submitted

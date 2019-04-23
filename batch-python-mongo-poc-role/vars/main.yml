@@ -1,0 +1,16 @@
+---
+
+AWS_ACCESS_KEY_ID: XX
+AWS_SECRET_ACCESS_KEY: XXX
+AWS_REGION: eu-west-1
+AWS_STORAGE_BUCKET_NAME: batch-mongo-poc
+
+task_name: batch_python_mongo_poc
+minv_cpus: 1
+maxv_cpus: 5
+desiredv_cpus: 1
+security_group_ids: default
+subnets: "default-subnet-{{ AWS_REGION }}a"
+instance_role: "arn:aws:iam::117802438413:instance-profile/ecsInstanceRole"
+service_role: "arn:aws:iam::117802438413:role/service-role/AWSBatchServiceRole"
+job_role: "arn:aws:iam::117802438413:role/ecsTaskExecutionRole"
