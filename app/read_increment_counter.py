@@ -15,4 +15,4 @@ except Exception as e:
     print(e)
     update = collection.insert_one({"count": 1, "type": "counter"})
 find = collection.find_one({"type": "counter"})
-print(find.get('count'))
+print("Current Count is: " + find.get('count'))

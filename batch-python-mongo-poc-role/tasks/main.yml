@@ -27,7 +27,7 @@
     maxv_cpus: "{{ maxv_cpus }}"
     desiredv_cpus: "{{ desiredv_cpus }}"
     instance_types:
-      - optimal
+      - a1.large
     subnets:
       - "{{subnets}}"
     security_group_ids:
@@ -38,9 +38,9 @@
       name: batch-python-mongo-poc
     service_role: "{{service_role}}"
 
-- name: Wait for 2 minutes for compute environment to be created
-  pause:
-    minutes: 2
+# - name: Wait for 1 minutes for compute environment to be created
+#   pause:
+#     minutes: 1
 
 - name: Setup Batch Job Definition
   aws_batch_job_definition:
@@ -52,11 +52,12 @@
     memory: 512
     job_role_arn: "{{job_role}}"
     attempts: 3
+    # privileged: True
   register: job_definition_create_result
 
-- name: Wait for 2 minutes for Job Definiation Creation
-  pause:
-    minutes: 2
+# - name: Wait for 1 minutes for Job Definiation Creation
+#   pause:
+#     minutes: 1
 
 - name: For debugging purpose
   debug: var=job_definition_create_result
@@ -78,9 +79,9 @@
   debug: var=batch_job_queue_action
 
 
-- name: Wait for 2 minutes for Job Queue
-  pause:
-    minutes: 2
+# - name: Wait for 1 minutes for Job Queue
+#   pause:
+#     minutes: 1
 
 
 # Using AWS CLI for this task as Ansible Module Support is not there.
