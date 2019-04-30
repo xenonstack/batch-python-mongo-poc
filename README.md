@@ -59,7 +59,7 @@ $ ansible-playbook aws_batch_unmanaged_compute.yml
 Proper Check has been implemented that if there is error on Docker Run, The instance will terminated even with an error.
 
 ## Setup vars
-Edit ansible vars directory under `batch-python-mongo-poc-role/vars/main.yml` to match your AWS Environment
+Edit ansible vars directory under `aws-batch-python-mongo-poc-role/vars/main.yml` to match your AWS Environment
 
 ```
 docker_image: XXX
