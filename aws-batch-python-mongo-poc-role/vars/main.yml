@@ -1,16 +1,28 @@
 ---
 
-AWS_ACCESS_KEY_ID: XXXX
+## required for both unamanged and managed
+AWS_ACCESS_KEY_ID: XX
 AWS_SECRET_ACCESS_KEY: XXX
-AWS_REGION: eu-west-1
+AWS_REGION: us-east-1
 AWS_STORAGE_BUCKET_NAME: batch-mongo-poc
-
 task_name: batch_python_mongo_poc
-minv_cpus: 1
+minv_cpus: 3
 maxv_cpus: 5
-desiredv_cpus: 1
+desiredv_cpus: 3
 security_group_ids: default
 subnets: "subnet-c4cc799e"
 instance_role: "arn:aws:iam::117802438413:instance-profile/ecsInstanceRole"
 service_role: "arn:aws:iam::117802438413:role/service-role/AWSBatchServiceRole"
 job_role: "arn:aws:iam::117802438413:role/ecsTaskExecutionRole"
+
+## Select unamanged and managed appropiately
+compute: unmanaged
+
+compute_environment_name: "{{task_name}}_{{compute}}"
+
+## required for unamanged
+subnet_unamanged: subnet-006a1067
+ami: ami-0de53d8956e8dcf80
+instance_type: t2.medium
+keypair: test_guri
+volume_size: "10"

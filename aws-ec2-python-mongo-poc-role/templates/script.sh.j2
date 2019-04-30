@@ -1,0 +1,22 @@
+#!/bin/bash
+
+# source configuration variables
+. /opt/bootstrap.env
+
+#Update the installed packages and package cache on your instance
+sudo yum update -y
+
+#Install the most recent Docker Community Edition package
+sudo amazon-linux-extras install docker -y
+
+#Start the Docker service
+sudo service docker start
+
+#Enable the Docker service
+sudo systemctl enable docker
+
+#Pull docker image
+sudo docker pull xenonstack/batch-python-mongo-poc
+
+#docker run
+sudo docker run --privileged -d --env VERSION={{docker_version}} --env AWS_STORAGE_BUCKET_NAME={{AWS_STORAGE_BUCKET_NAME}} --env AWS_ACCESS_KEY_ID={{AWS_ACCESS_KEY_ID}} --env AWS_SECRET_ACCESS_KEY={{AWS_SECRET_ACCESS_KEY}} xenonstack/batch-python-mongo-poc:v4

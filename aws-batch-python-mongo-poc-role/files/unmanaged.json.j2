@@ -1,0 +1,22 @@
+{
+  "computeEnvironmentName": "{{ compute_environment_name }}",
+  "type": "UNMANAGED",
+  "state": "ENABLED",
+  "computeResources": {
+    "type": "EC2",
+    "minvCpus": {{minv_cpus}},
+    "maxvCpus": {{maxv_cpus}},
+    "desiredvCpus": {{desiredv_cpus}},
+    "instanceTypes": ["{{ instance_type }}"],
+    "subnets": [ "{{subnet_unamanged}}" ],
+    "securityGroupIds": [
+      "{{security_group_ids}}"
+    ],
+    "ec2KeyPair": "{{keypair}}",
+    "instanceRole": "{{instance_role}}",
+    "tags": {
+      "Name": "{{task_name}}"
+    }
+  },
+  "serviceRole": "{{service_role}}"
+}

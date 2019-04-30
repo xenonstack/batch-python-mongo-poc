@@ -1,3 +1,0 @@
----
-docker_image: xenonstack/batch-python-mongo-poc:v1
-AWS_S3_MOUNTPOINT: /data/db

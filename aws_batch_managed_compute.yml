@@ -2,4 +2,4 @@
 - name: Setup batch job on AWS
   hosts: localhost
   roles:
-    - batch-python-mongo-poc-role
+    - aws-batch-python-mongo-poc-role

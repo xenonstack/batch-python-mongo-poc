@@ -8,11 +8,15 @@ try:
     current_count = int(find.get('count'))
     update = collection.update_one({"count": current_count, "type": "counter"},{
       '$set': {
-        'count': current_count + 1
+        'count': int(current_count) + 1
       }
     }, upsert=True)
 except Exception as e:
     print(e)
     update = collection.insert_one({"count": 1, "type": "counter"})
 find = collection.find_one({"type": "counter"})
-print("Current Count is: " + find.get('count'))
+print("#########################################")
+print("#########################################")
+print("Current Count is: {}".format(find.get('count')))
+print("#########################################")
+print("#########################################")

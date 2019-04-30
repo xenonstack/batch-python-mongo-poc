@@ -15,9 +15,9 @@
     filters:
       group-name: default-sg
 
-- name: setup batch envirnoment
+- name: setup batch envirnoment if managed
   aws_batch_compute_environment:
-    compute_environment_name: "{{ task_name }}_environment"
+    compute_environment_name: "{{ compute_environment_name }}"
     state: present
     region: "{{ AWS_REGION }}"
     compute_environment_state: ENABLED
@@ -37,10 +37,17 @@
       env: poc
       name: batch-python-mongo-poc
     service_role: "{{service_role}}"
+  when: compute == 'managed'
 
-# - name: Wait for 1 minutes for compute environment to be created
-#   pause:
-#     minutes: 1
+- name: setup batch envirnoment if unmanaged
+  command: >
+    aws batch create-compute-environment
+    --cli-input-json '{{ lookup('template', 'files/unmanaged.json.j2') | to_json }}'
+  register: batch_job_submitted
+
+- name: Wait for 1 minutes for compute environment to be created
+  pause:
+    minutes: 1
 
 - name: Setup Batch Job Definition
   aws_batch_job_definition:
@@ -55,9 +62,9 @@
     # privileged: True
   register: job_definition_create_result
 
-# - name: Wait for 1 minutes for Job Definiation Creation
-#   pause:
-#     minutes: 1
+- name: Wait for 1 minutes for Job Definiation Creation
+  pause:
+    minutes: 1
 
 - name: For debugging purpose
   debug: var=job_definition_create_result
@@ -72,16 +79,16 @@
     priority: 1
     compute_environment_order:
       - order: 1
-        compute_environment: "{{ task_name }}_environment"
+        compute_environment: "{{ compute_environment_name }}"
   register: batch_job_queue_action
 
 - name: debugging the results
   debug: var=batch_job_queue_action
 
 
-# - name: Wait for 1 minutes for Job Queue
-#   pause:
-#     minutes: 1
+- name: Wait for 1 minutes for Job Queue
+  pause:
+    minutes: 1
 
 
 # Using AWS CLI for this task as Ansible Module Support is not there.

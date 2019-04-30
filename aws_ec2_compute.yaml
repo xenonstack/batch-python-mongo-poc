@@ -1,0 +1,5 @@
+- name: Create an Instance
+  hosts: localhost
+  gather_facts: False
+  roles:
+    - aws-ec2-python-mongo-poc-role
